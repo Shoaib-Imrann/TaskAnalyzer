@@ -84,3 +84,28 @@ class ScoringLogicTests(TestCase):
             self.assertEqual(len(scored), 2)
         except RecursionError:
             self.fail("Scoring logic hit infinite recursion on circular dependency")
+
+    def test_effort_scoring(self):
+        """Test that low-effort tasks get higher scores in fastest_wins mode"""
+        tasks = [
+            {
+                "id": 1,
+                "title": "Quick Task",
+                "due_date": str(self.today + timedelta(days=5)),
+                "estimated_hours": 1,
+                "importance": 5,
+                "dependencies": []
+            },
+            {
+                "id": 2,
+                "title": "Long Task",
+                "due_date": str(self.today + timedelta(days=5)),
+                "estimated_hours": 10,
+                "importance": 5,
+                "dependencies": []
+            }
+        ]
+        
+        scored = calculate_score(tasks, mode='fastest_wins')
+        self.assertEqual(scored[0]['id'], 1)
+        self.assertTrue(scored[0]['score'] > scored[1]['score'])
