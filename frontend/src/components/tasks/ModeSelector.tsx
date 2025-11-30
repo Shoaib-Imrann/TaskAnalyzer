@@ -39,12 +39,18 @@ const modes: { value: AnalysisMode; label: string; description: string }[] = [
 ];
 
 export function ModeSelector({ value, onChange }: ModeSelectorProps) {
+  const selectedMode = modes.find((mode) => mode.value === value);
+
   return (
-    <div className="space-y-2">
-      <Label htmlFor="mode-select">Analysis Mode</Label>
+    <div className="space-y-2 mt-5">
+      <Label htmlFor="mode-select" className="font-semibold">
+        Analysis Mode
+      </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger id="mode-select">
-          <SelectValue placeholder="Select analysis mode" />
+        <SelectTrigger id="mode-select" className="w-full md:w-64">
+          <SelectValue placeholder="Select analysis mode">
+            {selectedMode?.label}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {modes.map((mode) => (

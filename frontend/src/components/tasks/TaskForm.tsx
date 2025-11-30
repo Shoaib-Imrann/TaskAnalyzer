@@ -10,7 +10,7 @@ interface TaskFormData {
   title: string;
   due_date: string;
   estimated_hours: number;
-  importance: number;
+  importance: number | "";
   dependencies: string[];
 }
 
@@ -45,7 +45,11 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
       newErrors.estimated_hours = "Estimated hours must be greater than 0";
     }
 
-    if (formData.importance < 1 || formData.importance > 10) {
+    if (
+      formData.importance === "" ||
+      formData.importance < 1 ||
+      formData.importance > 10
+    ) {
       newErrors.importance = "Importance must be between 1 and 10";
     }
 
@@ -80,42 +84,40 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Task Title *</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, title: e.target.value }))
-          }
-          placeholder="Enter task title"
-          className={errors.title ? "border-destructive" : ""}
-        />
-        {errors.title && (
-          <p className="text-sm text-destructive">{errors.title}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="due_date">Due Date *</Label>
-        <Input
-          id="due_date"
-          type="date"
-          value={formData.due_date}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, due_date: e.target.value }))
-          }
-          className={errors.due_date ? "border-destructive" : ""}
-        />
-        {errors.due_date && (
-          <p className="text-sm text-destructive">{errors.due_date}</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="estimated_hours">Estimated Hours *</Label>
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <div className="flex flex-col md:flex-row gap-2 md:items-end">
+        <div className="flex-1 md:w-64">
+          <Label htmlFor="title" className="text-sm text-gray-400">
+            Title
+          </Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, title: e.target.value }))
+            }
+            placeholder="Task title"
+            className={`placeholder:text-gray-300 ${errors.title ? "border-red-500" : ""}`}
+          />
+        </div>
+        <div className="flex-1 md:flex-none">
+          <Label htmlFor="due_date" className="text-sm text-gray-400">
+            Due Date
+          </Label>
+          <Input
+            id="due_date"
+            type="date"
+            value={formData.due_date}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, due_date: e.target.value }))
+            }
+            className={`placeholder:text-gray-300 ${errors.due_date ? "border-red-500" : ""}`}
+          />
+        </div>
+        <div className="flex-1 md:w-20">
+          <Label htmlFor="estimated_hours" className="text-sm text-gray-400">
+            Hours
+          </Label>
           <Input
             id="estimated_hours"
             type="number"
@@ -128,15 +130,13 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
                 estimated_hours: parseFloat(e.target.value) || 0,
               }))
             }
-            className={errors.estimated_hours ? "border-destructive" : ""}
+            className={`placeholder:text-gray-300 ${errors.estimated_hours ? "border-red-500" : ""}`}
           />
-          {errors.estimated_hours && (
-            <p className="text-sm text-destructive">{errors.estimated_hours}</p>
-          )}
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="importance">Importance (1-10) *</Label>
+        <div className="flex-1 md:w-20">
+          <Label htmlFor="importance" className="text-sm text-gray-400">
+            Priority
+          </Label>
           <Input
             id="importance"
             type="number"
@@ -146,33 +146,37 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
-                importance: parseInt(e.target.value, 10) || 5,
+                importance:
+                  e.target.value === "" ? "" : parseInt(e.target.value, 10),
               }))
             }
-            className={errors.importance ? "border-destructive" : ""}
+            className={`placeholder:text-gray-300 ${errors.importance ? "border-red-500" : ""}`}
           />
-          {errors.importance && (
-            <p className="text-sm text-destructive">{errors.importance}</p>
-          )}
         </div>
+        <div className="flex-1 md:w-40">
+          <Label htmlFor="dependencies" className="text-sm text-gray-400">
+            Dependencies
+          </Label>
+          <Input
+            id="dependencies"
+            value={formData.dependencies.join(", ")}
+            onChange={(e) => handleDependenciesChange(e.target.value)}
+            placeholder="task1, task2"
+            className="placeholder:text-gray-300"
+          />
+        </div>
+        <Button type="submit" className="w-full md:w-auto">
+          Add
+        </Button>
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="dependencies">Dependencies (comma-separated IDs)</Label>
-        <Input
-          id="dependencies"
-          value={formData.dependencies.join(", ")}
-          onChange={(e) => handleDependenciesChange(e.target.value)}
-          placeholder="e.g., task1, task2"
-        />
-        <p className="text-xs text-muted-foreground">
-          Enter task IDs that must be completed before this task
-        </p>
-      </div>
-
-      <Button type="submit" className="w-full">
-        Add Task
-      </Button>
+      {(errors.title ||
+        errors.due_date ||
+        errors.estimated_hours ||
+        errors.importance) && (
+        <div className="text-sm text-red-600">
+          {Object.values(errors).join(", ")}
+        </div>
+      )}
     </form>
   );
 }

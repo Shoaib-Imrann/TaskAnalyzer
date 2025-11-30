@@ -14,37 +14,6 @@ export function BulkImport({ onLoad }: BulkImportProps) {
   const [jsonText, setJsonText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const loadSample = () => {
-    const sampleTasks = [
-      {
-        "title": "Complete project documentation",
-        "due_date": "2024-12-31",
-        "estimated_hours": 4,
-        "importance": 8,
-        "dependencies": []
-      },
-      {
-        "title": "Review code changes",
-        "due_date": "2024-12-25",
-        "estimated_hours": 2,
-        "importance": 6,
-        "dependencies": ["doc-task"]
-      },
-      {
-        "title": "Fix critical bug",
-        "due_date": "2024-12-20",
-        "estimated_hours": 3,
-        "importance": 9,
-        "dependencies": []
-      }
-    ];
-    onLoad(sampleTasks.map((task, index) => ({
-      ...task,
-      id: (Date.now() + index).toString()
-    })));
-    setError(null);
-  };
-
   const handleLoad = () => {
     if (!jsonText.trim()) {
       setError("Please enter JSON data");
@@ -93,35 +62,31 @@ export function BulkImport({ onLoad }: BulkImportProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="json-input">JSON Tasks</Label>
+    <div className="space-y-2">
+      <Label htmlFor="json-input" className="text-gray-400">
+        JSON Tasks
+      </Label>
+      <div className="flex flex-col md:flex-row gap-2 md:items-start">
         <Textarea
           id="json-input"
           value={jsonText}
           onChange={(e) => setJsonText(e.target.value)}
           placeholder={`[
-  {
-    "title": "Complete project",
-    "due_date": "2024-12-31",
-    "estimated_hours": 8,
-    "importance": 9,
-    "dependencies": []
-  }
-]`}
-          className="min-h-[120px] font-mono text-sm"
+          {
+            "title": "Complete project",
+            "due_date": "2025-11-27",
+            "estimated_hours": 8,
+            "importance": 9,
+            "dependencies": []
+          }
+          ]`}
+          className="min-h-[120px] font-mono text-sm flex-1 placeholder:text-gray-300"
         />
-        {error && <p className="text-sm text-destructive">{error}</p>}
-      </div>
-
-      <div className="flex gap-2">
-        <Button onClick={handleLoad} className="flex-1">
+        <Button onClick={handleLoad} className="w-full md:w-auto md:mt-0">
           Load JSON
         </Button>
-        <Button onClick={loadSample} variant="outline" className="flex-1">
-          Load Sample
-        </Button>
       </div>
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }
