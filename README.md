@@ -3,7 +3,7 @@
 
 Setup instructions are available in each folder:
 - **Frontend**: See `frontend/README.md` for Next.js setup
-- **Backend**: See `backend/README.md` for Python/FastAPI setup
+- **Backend**: See `backend/README.md` for Django setup
 
 ## Demo
 
